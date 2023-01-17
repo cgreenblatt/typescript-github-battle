@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import * as ReactDOM from "react-dom/client";
 import "./index.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -9,33 +9,26 @@ const Results = React.lazy(() => import("./components/Results"));
 const Popular = React.lazy(() => import("./components/Popular"));
 const Battle = React.lazy(() => import("./components/Battle"));
 
-class App extends React.Component {
-  state = {
-    theme: "light",
-  };
-  toggleTheme = () => {
-    this.setState(({ theme }) => ({
-      theme: theme === "light" ? "dark" : "light",
-    }));
-  };
-  render() {
+function App() {
+    const [theme, setTheme] = useState('light');
+    const toggleTheme = () => setTheme((theme) => theme === "light" ? "dark" : "light");
+
     return (
-      <Router>
-        <div className={this.state.theme}>
-          <div className="container">
-            <Nav theme="light" toggleTheme={this.toggleTheme} />
-            <React.Suspense fallback={<Loading />}>
-              <Routes>
-                <Route path="/" element={<Popular />} />
-                <Route path="/battle" element={<Battle />} />
-                <Route path="/results" element={<Results />} />
-              </Routes>
-            </React.Suspense>
+        <Router>
+          <div className={theme}>
+            <div className="container">
+              <Nav theme={theme} toggleTheme={toggleTheme} />
+              <React.Suspense fallback={<Loading />}>
+                <Routes>
+                  <Route path="/" element={<Popular />} />
+                  <Route path="/battle" element={<Battle />} />
+                  <Route path="/results" element={<Results />} />
+                </Routes>
+              </React.Suspense>
+            </div>
           </div>
-        </div>
-      </Router>
-    );
-  }
+        </Router>
+      );
 }
 
 const rootElement = document.getElementById("app");
