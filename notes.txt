@@ -1,0 +1,8 @@
+Project first component
+babel presets: in webpack.config.js
+  "babel": {
+    "presets": [
+      "@babel/preset-env", // new javascript to older javascript
+      "@babel/preset-react" // jsx to javascript conversion
+    ]
+  },
