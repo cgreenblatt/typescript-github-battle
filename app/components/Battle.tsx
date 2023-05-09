@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
-import { close } from "./icons";
-import { Link } from "react-router-dom";
+import React, { useState, ChangeEventHandler } from 'react';
+import PropTypes from 'prop-types';
+import { close } from './icons';
+import { Link } from 'react-router-dom';
 
 function Instructions() {
   return (
@@ -16,13 +16,20 @@ function Instructions() {
   );
 }
 
-function PlayerInput({ onSubmit, label }) {
-  const [username, setUsername] = useState("");
-  const handleSubmit = (e) => {
+function PlayerInput({
+  onSubmit,
+  label,
+}: {
+  onSubmit: (username: string) => void;
+  label: string;
+}) {
+  const [username, setUsername] = useState('');
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     onSubmit(username);
-  }
-  const handleChange = (e) => setUsername(e.target.value);
+  };
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) =>
+    setUsername(e.target.value);
   return (
     <form className="card" onSubmit={handleSubmit}>
       <label htmlFor="username" className="player-label">
@@ -37,11 +44,7 @@ function PlayerInput({ onSubmit, label }) {
           value={username}
           onChange={handleChange}
         />
-        <button
-          className="btn link"
-          type="submit"
-          disabled={!username}
-        >
+        <button className="btn link" type="submit" disabled={!username}>
           Submit
         </button>
       </div>
@@ -49,7 +52,15 @@ function PlayerInput({ onSubmit, label }) {
   );
 }
 
-function PlayerPreview({ username, onReset, label }) {
+function PlayerPreview({
+  username,
+  onReset,
+  label,
+}: {
+  username: string;
+  onReset: () => void;
+  label: string;
+}) {
   return (
     <article className="card">
       <h3 className="player-label">{label}</h3>
@@ -81,13 +92,11 @@ PlayerPreview.propTypes = {
 };
 
 export default function Battle() {
-  const [playerOne, setPlayerOne] = useState(null);
-  const [playerTwo, setPlayerTwo] = useState(null);
-  const handleSetPlayer = (id, player) => {
-    id === "playerOne" 
-      ? setPlayerOne(player)
-      : setPlayerTwo(player);
-  }
+  const [playerOne, setPlayerOne] = useState<string | null>(null);
+  const [playerTwo, setPlayerTwo] = useState<string | null>(null);
+  const handleSetPlayer = (id: string, player: string | null) => {
+    id === 'playerOne' ? setPlayerOne(player) : setPlayerTwo(player);
+  };
   const disabled = !playerOne || !playerTwo;
 
   return (
@@ -96,10 +105,10 @@ export default function Battle() {
         <h1>Players</h1>
         <Link
           to={{
-            pathname: "/results",
+            pathname: '/results',
             search: `?playerOne=${playerOne}&playerTwo=${playerTwo}`,
           }}
-          className={`btn primary ${disabled ? "disabled" : ""}`}
+          className={`btn primary ${disabled ? 'disabled' : ''}`}
         >
           Battle
         </Link>
@@ -108,25 +117,25 @@ export default function Battle() {
         {playerOne === null ? (
           <PlayerInput
             label="Player One"
-            onSubmit={(player) => handleSetPlayer("playerOne", player)}
+            onSubmit={(player) => handleSetPlayer('playerOne', player)}
           />
         ) : (
           <PlayerPreview
             label="Player One"
             username={playerOne}
-            onReset={() => handleSetPlayer("playerOne", null)}
+            onReset={() => handleSetPlayer('playerOne', null)}
           />
         )}
         {playerTwo === null ? (
           <PlayerInput
             label="Player Two"
-            onSubmit={(player) => handleSetPlayer("playerTwo", player)}
+            onSubmit={(player) => handleSetPlayer('playerTwo', player)}
           />
         ) : (
           <PlayerPreview
             label="Player Two"
             username={playerTwo}
-            onReset={() => handleSetPlayer("playerTwo", null)}
+            onReset={() => handleSetPlayer('playerTwo', null)}
           />
         )}
       </section>

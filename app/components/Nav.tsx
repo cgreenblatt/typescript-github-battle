@@ -1,14 +1,20 @@
-import * as React from "react";
-import { NavLink } from "react-router-dom";
-import PropTypes from "prop-types";
-import { sunIcon, moonIcon } from "./icons";
+import * as React from 'react';
+import { NavLink } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { sunIcon, moonIcon } from './icons';
 
-export default function Nav({ theme, toggleTheme }) {
+export default function Nav({
+  theme,
+  toggleTheme,
+}: {
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
+}) {
   return (
     <nav className="split">
       <NavLink
         to="/"
-        className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}
+        className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}
       >
         Github Battle
       </NavLink>
@@ -17,7 +23,7 @@ export default function Nav({ theme, toggleTheme }) {
           <NavLink
             to="/"
             className={({ isActive }) =>
-              "nav-link " + (isActive ? " active" : "")
+              'nav-link ' + (isActive ? ' active' : '')
             }
           >
             Popular
@@ -27,7 +33,7 @@ export default function Nav({ theme, toggleTheme }) {
           <NavLink
             to="/battle"
             className={({ isActive }) =>
-              "nav-link " + (isActive ? " active" : "")
+              'nav-link ' + (isActive ? ' active' : '')
             }
           >
             Battle
@@ -35,7 +41,7 @@ export default function Nav({ theme, toggleTheme }) {
         </li>
         <li>
           <button className="btn secondary icon" onClick={toggleTheme}>
-            {theme === "light" ? moonIcon : sunIcon}
+            {theme === 'light' ? moonIcon : sunIcon}
           </button>
         </li>
       </ul>

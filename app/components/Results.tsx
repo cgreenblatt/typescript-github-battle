@@ -1,11 +1,12 @@
-import React, { useEffect, useReducer } from "react";
-import { useSearchParams } from "react-router-dom";
-import { battle } from "../utils/api";
-import PropTypes from "prop-types";
-import Loading from "./Loading";
-import { Link } from "react-router-dom";
+import React, { useEffect, useReducer } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { battle } from '../utils/api';
+import PropTypes from 'prop-types';
+import Loading from './Loading';
+import { Link } from 'react-router-dom';
+import { type Profile, type Player } from '../utils/api';
 
-function Card({ profile }) {
+function Card({ profile }: { profile: Profile }) {
   const {
     login,
     avatar_url,
@@ -24,7 +25,7 @@ function Card({ profile }) {
           <h4>
             <a href={html_url}>{login}</a>
           </h4>
-          <p>{location || "unknown"}</p>
+          <p>{location || 'unknown'}</p>
         </div>
         <img
           className="avatar large"
@@ -34,10 +35,10 @@ function Card({ profile }) {
       </header>
       <ul className="stack">
         <li className="split">
-          <span>Name:</span> <span>{login || "n/a"}</span>
+          <span>Name:</span> <span>{login || 'n/a'}</span>
         </li>
         <li className="split">
-          <span>Company:</span> <span>{company || "n/a"}</span>
+          <span>Company:</span> <span>{company || 'n/a'}</span>
         </li>
         <li className="split">
           <span>Followers:</span> <span>{followers}</span>
@@ -66,42 +67,73 @@ Card.propTypes = {
   }).isRequired,
 };
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'error': 
-      return {
-        ...state,
-        error: action.error.message,
-        loading: false
-      }
-    case 'success' :
-      return {
-        ...state,
-        loading: false,
-        winner: action.winner,
-        loser: action.loser
-      }
-    default: console.error(`Action type ${action.type} is not supported`)
-  }
+interface LoadingAction {
+  type: 'loading';
+  loading: true;
+}
+interface ErrorAction {
+  type: 'error';
+  error: Error;
+}
+interface SuccessAction {
+  type: 'success';
+  winner: Player;
+  loser: Player;
+}
+type ReducerAction = LoadingAction | ErrorAction | SuccessAction;
+interface ReducerState {
+  loading: boolean;
+  error?: string;
+  winner?: Player;
+  loser?: Player;
 }
 
+const reducer = (state: ReducerState, action: ReducerAction): ReducerState => {
+  switch (action.type) {
+    case 'loading':
+      return {
+        loading: true,
+      };
+    case 'error':
+      return {
+        error: action.error.message,
+        loading: false,
+      };
+    case 'success':
+      return {
+        loading: false,
+        error: '',
+        winner: action.winner,
+        loser: action.loser,
+      };
+    default:
+      return state;
+  }
+};
+
 export default function Results() {
-  const [state, dispatch] = useReducer(reducer, { loading: true })
+  const [state, dispatch] = useReducer(reducer, { loading: true });
   const [sp] = useSearchParams();
-  const playerOne = sp.get("playerOne");
-  const playerTwo = sp.get("playerTwo");
+  const playerOne = sp.get('playerOne');
+  const playerTwo = sp.get('playerTwo');
 
   useEffect(() => {
-    battle([playerOne, playerTwo])
-    .then((players) => {
-      dispatch({ type: 'success', winner: players[0], loser: players[1] });
-    })
-    .catch(({ message }) => {
-      dispatch({ type: 'error' })
-    });
+    if (playerOne && playerTwo) {
+      battle([playerOne, playerTwo])
+        .then((players) => {
+          dispatch({ type: 'success', winner: players[0], loser: players[1] });
+        })
+        .catch((e) => {
+          dispatch({ type: 'error', error: e });
+        });
+    } else {
+      dispatch({ type: 'error', error: Error('Invalid player(s)') });
+    }
   }, [playerOne, playerTwo]);
 
-  const { winner, loser, error, loading } = state;
+  const { error, loading } = state;
+  const winner = state.winner!;
+  const loser = state.loser!;
 
   if (loading === true) {
     return <Loading text="Battling" />;
@@ -124,7 +156,7 @@ export default function Results() {
           <Card profile={winner.profile} />
           <p className="results">
             <span>
-              {winner.score === loser.score ? "Tie" : "Winner"}{" "}
+              {winner.score === loser.score ? 'Tie' : 'Winner'}{' '}
               {winner.score.toLocaleString()}
             </span>
             {winner.score !== loser.score && (
@@ -140,7 +172,7 @@ export default function Results() {
           <Card profile={loser.profile} />
           <p className="results">
             <span>
-              {winner.score === loser.score ? "Tie" : "Loser"}{" "}
+              {winner.score === loser.score ? 'Tie' : 'Loser'}{' '}
               {loser.score.toLocaleString()}
             </span>
           </p>
